@@ -1,17 +1,14 @@
-from flask import Flask, request, jsonify
 import sqlite3
 
-app = Flask(__name__)
-DATABASE_NAME = "restaurant_management.db"
-
 # Function to create a new SQLite database
-def create_database():
-    conn = sqlite3.connect(DATABASE_NAME)
+def create_database(database_name):
+    conn = sqlite3.connect(database_name)
     conn.close()
+    print(f"Database '{database_name}' created successfully.")
 
 # Function to create a table for menu items
-def create_menu_table():
-    conn = sqlite3.connect(DATABASE_NAME)
+def create_menu_table(database_name):
+    conn = sqlite3.connect(database_name)
     cursor = conn.cursor()
 
     # SQL query to create a menu_items table
@@ -31,10 +28,13 @@ def create_menu_table():
 
     # Close the connection
     conn.close()
+    print("Table 'menu_items' created successfully.")
+
+
 
 # Function to add a new menu item to the menu table
-def add_menu_item(item_name, price, description="", category=""):
-    conn = sqlite3.connect(DATABASE_NAME)
+def add_menu_item(database_name, item_name, price, description="", category=""):
+    conn = sqlite3.connect(database_name)
     cursor = conn.cursor()
 
     # SQL query to insert a new menu item into the menu_items table
@@ -49,10 +49,13 @@ def add_menu_item(item_name, price, description="", category=""):
 
     # Close the connection
     conn.close()
+    print("Menu item added successfully.")
+    
+    
 
 # Function to retrieve all menu items from the menu table
-def get_all_menu_items():
-    conn = sqlite3.connect(DATABASE_NAME)
+def get_all_menu_items(database_name):
+    conn = sqlite3.connect(database_name)
     cursor = conn.cursor()
 
     # SQL query to select all rows from the menu_items table
@@ -71,9 +74,11 @@ def get_all_menu_items():
 
     return menu_items
 
+
+
 # Function to update a menu item in the menu table
-def update_menu_item(item_id, new_item_name=None, new_price=None, new_description=None, new_category=None):
-    conn = sqlite3.connect(DATABASE_NAME)
+def update_menu_item(database_name, item_id, new_item_name=None, new_price=None, new_description=None, new_category=None):
+    conn = sqlite3.connect(database_name)
     cursor = conn.cursor()
 
     # Generate SET clause dynamically based on provided parameters
@@ -112,10 +117,12 @@ def update_menu_item(item_id, new_item_name=None, new_price=None, new_descriptio
 
     # Close the connection
     conn.close()
+    print("Menu item updated successfully.")
+    
 
 # Function to delete a menu item from the menu table
-def delete_menu_item(item_id):
-    conn = sqlite3.connect(DATABASE_NAME)
+def delete_menu_item(database_name, item_id):
+    conn = sqlite3.connect(database_name)
     cursor = conn.cursor()
 
     # SQL query to delete the menu item with the specified ID
@@ -130,35 +137,58 @@ def delete_menu_item(item_id):
 
     # Close the connection
     conn.close()
+    print("Menu item deleted successfully.")
 
-# Flask API routes
-@app.route('/', methods=['GET'])
-def welcome():
-    return "Welcome to Resturant Management Dashboard"
+# Example usage
+# database_name = "restaurant_management.db"
+# delete_menu_item(database_name, item_id=1)
 
-@app.route('/api/menu', methods=['GET'])
-def get_menu():
-    menu_items = get_all_menu_items()
-    return jsonify(menu_items)
 
-@app.route('/api/menu/add', methods=['POST'])
-def add_menu():
-    data = request.json
-    add_menu_item(data['item_name'], data['price'], data.get('description', ""), data.get('category', ""))
-    return jsonify({"message": "Menu item added successfully"})
+# Example usage
+# database_name = "restaurant_management.db"
+# update_menu_item(database_name, item_id=1, new_price=5.99, new_description="Classic checken burger with cheese and bacon")
 
-@app.route('/api/menu/update/<int:item_id>', methods=['PUT'])
-def update_menu(item_id):
-    data = request.json
-    update_menu_item(item_id, data.get('item_name'), data.get('price'), data.get('description'), data.get('category'))
-    return jsonify({"message": "Menu item updated successfully"})
 
-@app.route('/api/menu/delete/<int:item_id>', methods=['DELETE'])
-def delete_menu(item_id):
-    delete_menu_item(item_id)
-    return jsonify({"message": "Menu item deleted successfully"})
+# # Example usage
+# database_name = "restaurant_management.db"
+# menu_items = get_all_menu_items(database_name)
+# for item in menu_items:
+#     print(item)
 
-if __name__ == '__main__':
-    # create_database()
-    # create_menu_table()
-    app.run(debug=True)
+
+
+# # Example usage
+database_name = "restaurant_management.db"
+# add_menu_item(database_name, "Veg Burger", 10.99, "Classic Veg burger with cheese", "Main Course")
+# add_menu_item(database_name, "Chicken Burger", 11.99, "Classic chicken burger with cheese", "Main Course")
+# add_menu_item(database_name, "Egg Burger", 12.99, "Classic Egg burger with cheese", "Main Course")
+# add_menu_item(database_name, "Cheese Burger", 13.99, "Classic Cheese burger with cheese", "Main Course")
+# add_menu_item(database_name, "Spicy Burger", 14.99, "Classic Spicy burger with cheese", "Main Course")
+
+# # Example usage
+# database_name = "restaurant_management.db"
+# create_database(database_name)
+# create_menu_table(database_name)
+# Function to delete menu items by category
+def delete_menu_items_by_category(category):
+    conn = sqlite3.connect(database_name)
+    cursor = conn.cursor()
+
+
+    # SQL query to delete menu items with the specified category
+    delete_query = """
+    DELETE FROM menu_items
+    WHERE category = ?
+    """
+
+    # Execute the SQL query with the category as a parameter
+    cursor.execute(delete_query, (category,))
+    conn.commit()
+
+    # Close the connection
+    conn.close()
+    print({"message": f"All menu items with category '{category}' deleted successfully"})
+
+delete_menu_items_by_category("Test")
+
+

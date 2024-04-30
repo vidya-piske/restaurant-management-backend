@@ -16,7 +16,7 @@
 </head>
 <body>
     <h1>Fetching Restaurant Item Details</h1>
-    <table>
+    <!-- <table>
         <thead>
             <tr>
                 <th>ID</th>
@@ -26,7 +26,7 @@
             </tr>
         </thead>
         <tbody>
-            {% for item in data %}
+            
             <tr>
                 <td>{{item[0]}}</td>
                 <td>{{item[1]}}</td>
@@ -35,6 +35,12 @@
             </tr>
             {% endfor %}
         </tbody>
-    </table>
+    </table> -->
+    {% for item in response %}
+        <h1>{{item[0]}}</h1>
+        <h1>{{item[1]}}</h1>
+        <h1>{{item[2]}}</h1>
+        <h1>{{item[3]}}</h1>
+    {% endfor %}
 </body>
 </html>
